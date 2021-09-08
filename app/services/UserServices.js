@@ -7,7 +7,7 @@ function UserServices() {
         });
     }
 
-    this.addList = function (user) {
+    this.addItem = function (user) {
         return axios({
             method: 'post',
             url: 'https://6135781a60d2900017c3bf96.mockapi.io/User',
