@@ -105,6 +105,7 @@ function addUser() {
 
     }
 }
+
 function getUser(id) {
     resetForm();
     userServices.getItem(id)
@@ -126,6 +127,7 @@ function getUser(id) {
             console.log(error);
         });
 }
+
 function updateUser(id){
     var isAdd = false;
     var isValid = checkIsValid(isAdd);
@@ -140,7 +142,6 @@ function updateUser(id){
             getEleWithSelector("#MoTa").value,
             getEleWithSelector("#HinhAnh").value
         );
-        console.log(user);
         userServices.updateItem(user,id)
             .then(function (response) {
                 getData();
@@ -152,6 +153,17 @@ function updateUser(id){
             });
     }
 }
+
+function deleteUser(id){
+    userServices.deleteItem(id)
+    .then(function (response) {
+        getData();
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+}
+
 function resetForm() {
     getEleWithSelector("#TaiKhoan").disabled = false;
     getEleWithSelector("#myModal form").reset();
