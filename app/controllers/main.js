@@ -4,20 +4,18 @@ function getEleWithSelector(stringSelector){
 var userServices = new UserServices();
 
 function getData(){
-    var result = [];
     userServices.getList()
     .then(function(response){
-        result = response.data;
+        localStorage.setItem("ListUsers",JSON.stringify(response.data));
     })
     .catch(function(error){
         console.log(error);
     });
-    return result;
+    return JSON.parse(localStorage.getItem("ListUsers"));
 }
-
 function displayData(data){
     var contentHTML = '';
-    if (data != null) {
+    if (data.length > 0) {
         data.map(function(item, index){
             contentHTML += `<tr>
                 <td>${index}</td>
@@ -34,14 +32,15 @@ function displayData(data){
             </tr>`
         });
     }else{
-        contentHTML += `<tr>
+        contentHTML += `
+        <tr>
                 <td colspan="8" class="text-center">Chưa có dữ liệu hoặc gặp sự cố khi tải dữ liệu.</td>
-            </tr>`
+            </tr>
+        `;
     }
-    
     getEleWithSelector("#tblDanhSachNguoiDung").innerHTML = contentHTML;
 }
-console.log(getData());
+displayData(getData());
 
 
 //Them user
@@ -54,16 +53,29 @@ getEleWithSelector("#btnThemNguoiDung").addEventListener("click", function(){
 function checkIsValid(){
     var isValid = true;
     var validation = new Validation();
+    var data = getData();
     //Check TaiKhoan
-    isValid &= validation.checkEmpty("TaiKhoan","tbTaiKhoan","Tên tài khoản không để trống") && validation.checkOnly("TaiKhoan","tbTaiKhoan","Tên tài khoản không để trống",);
-
+    isValid &= validation.checkEmpty("TaiKhoan","tbTaiKhoan","Tên tài khoản không để trống!") && validation.checkOnly("TaiKhoan","tbTaiKhoan","Tên tài khoản đã tồn tại!",data);
+    //Check Hoten
+    isValid &= validation.checkEmpty("HoTen","tbHoTen","Họ tên không để trống!") && validation.checkName("HoTen","tbHoTen","Họ tên không chứa ký tự số và ký tự đặc biệt!",data);
+    //Check Pass
+    isValid &= validation.checkEmpty("MatKhau","tbMatKhau","Mật khẩu không để trống!") && validation.checkPass("MatKhau","tbMatKhau","Mật khẩu không hợp lệ!");
+    //Check Email
+    isValid &= validation.checkEmpty("Email","tbEmail","Email không để trống!") && validation.checkEmail("Email","tbEmail","Email không hợp lệ!");
+    //Check HinhAnh
+    isValid &= validation.checkEmpty("HinhAnh","tbHinhAnh","Mật khẩu không để trống!");
+    //Check LoaiNguoiDung
+    isValid &= validation.checkSelect("loaiNguoiDung","tbloaiNguoiDung","Chưa chọn loại người dùng!");
+    //Check Ngon ngu
+    isValid &= validation.checkSelect("loaiNgonNgu","tbloaiNgonNgu","Chưa chọn loại ngôn ngữ!");
+     //Check Mo ta
+    isValid &= validation.checkEmpty("MoTa","tbMoTa","Mô tả không để trống!") && validation.checkNumChar("MoTa", 1,60,"tbMoTa","Mô tả không quá 60 ký tự.");
     return isValid;
 }
 
 function addUser(){
     var isValid = checkIsValid();
     if (isValid) {
-        console.log("Du lieu hop le");
         var user = new User(
             getEleWithSelector("#TaiKhoan").value,
             getEleWithSelector("#HoTen").value,
@@ -74,6 +86,7 @@ function addUser(){
             getEleWithSelector("#MoTa").value,
             getEleWithSelector("#HinhAnh").value
         );
+        console.table(user);
     }
 }
 
